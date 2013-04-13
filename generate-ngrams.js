@@ -1,4 +1,4 @@
-var acorn     = require('./lib/acorn.js')
+var acorn     = require('./lib/acorn/acorn.js')
   , fs        = require('fs')
   , sampleDir = './sample/'
 

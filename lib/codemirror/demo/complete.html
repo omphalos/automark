@@ -1,13 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <title>Markov Chain Autocompleter</title>
-    <link rel="stylesheet" href="lib/normalize/normalize.css">
-    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="lib/codemirror/addon/hint/show-hint.css">
+    <meta charset="utf-8">
+    <title>CodeMirror: Autocomplete Demo</title>
+    <link rel="stylesheet" href="../lib/codemirror.css">
+    <script src="../lib/codemirror.js"></script>
+    <script src="../addon/hint/show-hint.js"></script>
+    <link rel="stylesheet" href="../addon/hint/show-hint.css">
+    <script src="../addon/hint/javascript-hint.js"></script>
+    <script src="../mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" href="../doc/docs.css">
   </head>
   <body>
-    <h1>Markov Chain Autocompleter</h1>
+    <h1>CodeMirror: Autocomplete demo</h1>
 
     <form><textarea id="code" name="code">
 function getCompletions(token, context) {
@@ -47,13 +52,19 @@ function getCompletions(token, context) {
 }
 </textarea></form>
 
-<p>Press <strong>ctrl-space</strong> to activate autocompletion.</p>
+<p>Press <strong>ctrl-space</strong> to activate autocompletion. See
+the code (<a href="../addon/hint/show-hint.js">here</a>
+and <a href="../addon/hint/javascript-hint.js">here</a>) to figure out
+how it works.</p>
 
-    <script src="lib/codemirror/lib/codemirror.js"></script>
-    <script src="lib/codemirror/addon/hint/show-hint.js"></script>
-    <script src="lib/codemirror/addon/hint/javascript-hint.js"></script>
-    <script src="lib/codemirror/mode/javascript/javascript.js"></script>
-    <script src="lib/microajax/microajax.minified.js"></script>
-    <script src="web.js"></script>
+    <script>
+      CodeMirror.commands.autocomplete = function(cm) {
+        CodeMirror.showHint(cm, CodeMirror.javascriptHint);
+      }
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        extraKeys: {"Ctrl-Space": "autocomplete"}
+      });
+    </script>
   </body>
 </html>
