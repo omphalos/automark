@@ -1,61 +1,63 @@
-var acorn     = require('./lib/acorn/acorn.js')
-  , fs        = require('fs')
-  , sampleDir = './sample/'
+var tokenizer  = require('./tokenizer.js')
+  , NGramTree  = require('./NGramTree.js')
+  , fs         = require('fs')
+  , sampleDir  = './sample/'
+  , ngramDepth = 2
 
-function readSampleFile(file) {
-  return fs.readFileSync(sampleDir + file)
-}
+Object.
+  keys(tokenizer.types).
+  forEach(tokenizeType);
 
-var maxLength = 4
-  , tree      = { root: { ct: 0 } }
+function tokenizeType(type) {
 
-tree.push = function push(node, buffer, n) {
+  var tree = new NGramTree()
 
-  n = n || 0
-  node.ct++
-  if(n === buffer.length) return
-  var token = '[' + buffer[n] + ']'
-  var child = node[token] || (node[token] = { ct: 0 })
-  push(child, buffer, n + 1)
-}
+  console.log('building ngrams by ' + type)
 
-function traverse(source) {
+  fs.
+    readdirSync(sampleDir).
+    map(readSampleFile).
+    forEach(doTypedTraversal)
 
-  var token
-    , getToken = acorn.tokenize(source)
-    , buffer = ['start']
+  function readSampleFile(file) {
+    return fs.readFileSync(sampleDir + file)
+  }
 
-  do {
+  function doTypedTraversal(document) {
+    return tree.traverse(document, type)
+  }
 
-    var token = getToken()
-    buffer.push(token.value || token.type.type) // add at end
-    if(buffer.length === maxLength) buffer.splice(0, 1) // remove from start
-    tree.push(tree.root, buffer)
-  } while(token.type.type !== 'eof')
+  var prunedTree = prune(tree.root, ngramDepth)
+
+  fs.writeFileSync(
+    './database/' + type + '-ngrams.json',
+    JSON.stringify(prunedTree))
+
 }
 
 function prune(node, minCount) {
 
-  var pruned = {}
+  var prunedTree = {}
 
   Object.
-    keys(node).
-    filter(function filterFn(key) { return key === 'ct' || node[key].ct >= minCount }).
-    sort(function sortFn(lhs, rhs) { return node[rhs].ct - node[lhs].ct }).
-    forEach(function copyKey(key) { 
-      pruned[key] = key === 'ct' ? 
-        node.ct : 
-        prune(node[key], minCount) 
-    })
+    keys   (node).
+    filter (outLowCountNodes).
+    sort   (byDescendingCount).
+    forEach(copyKeyToPrunedTree)
 
-  return pruned
+  function outLowCountNodes(key) { 
+    return key === 'ct' || node[key].ct >= minCount 
+  }
+
+  function byDescendingCount(lhs, rhs) {
+    return node[rhs].ct - node[lhs].ct
+  }
+
+  function copyKeyToPrunedTree(key) {
+    prunedTree[key] = key === 'ct' ? 
+      node[key] : 
+      prune(node[key], minCount) 
+  }
+
+  return prunedTree
 }
-
-fs.
-  readdirSync(sampleDir).
-  map        (readSampleFile).
-  forEach    (traverse)
-
-var pruned = prune(tree.root, 100)
-
-fs.writeFileSync('output.json', JSON.stringify(pruned))
