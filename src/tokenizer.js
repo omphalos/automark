@@ -5,7 +5,7 @@
   if (typeof exports === 'object') {
     module.exports = factory(require('../lib/acorn/acorn.js'))
   } else {
-    root.tokenizer = factory(root.acorn)
+    root.automark = { tokenizer: factory(root.acorn) }
   }
 
 }(this, function (acorn) {
