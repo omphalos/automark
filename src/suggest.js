@@ -12,20 +12,13 @@
 
   return function suggest(db, text) {
 
-    var suggestionsByValue = suggestByType(db, 'value', text)
-    console.log('suggestions by value:')
-    console.log(suggestionsByValue)
+    var byValue              = suggestByType(db, 'value', text)
+      , byGrammar            = suggestByType(db, 'grammar', text)
+      , coalescedSuggestions = byValue.length ? byValue : byGrammar
 
-    var suggestionsByGrammar = suggestByType(db, 'grammar', text)
-    console.log('suggestions by grammar:')
-    console.log(suggestionsByGrammar)
+    return coalescedSuggestions.map(removeBrackets)
 
-    var coalesced = suggestionsByValue.length ? 
-      suggestionsByValue : 
-      suggestionsByGrammar
-
-    return coalesced.map(removeBrackets)
-
+    // Tokens are stored like '[token]'' so we have to remove the brackets.
     function removeBrackets(token) {
       return token.slice(1, token.length - 1)
     }
@@ -33,11 +26,14 @@
 
   function suggestByType(db, type, text) {
 
-    var maxNgramLength = 10
-      , allTokens      = tokenizer.tokenize(text, { type: type })
-      , tokens         = allTokens.slice(allTokens.length - maxNgramLength)
-      , result = []
+    var result        = []
       , suggestionMap = {}
+      , maxLen        = 10
+      , allTokens     = tokenizer.tokenize(text, { type: type })
+    
+    var tokens = allTokens.length ?
+      allTokens.slice(allTokens.length - maxLen) :
+      ['start'] // This signifies the start of the document.
 
     // Check for tokenization errors.
     if(tokens.filter(identity).length !== tokens.length) {
@@ -49,9 +45,6 @@
 
     function identity(x) { return x }
 
-    console.log('tokens:')
-    console.log(tokens)
-
     for(var ngramLength = tokens.length; ngramLength >= 1; ngramLength--) {
 
       // Crawl the NGramTree and try to find a matching node.
@@ -61,11 +54,7 @@
 
         var token = tokens[tokens.length - ngramLength + t]
         node = node[token]
-        if(!node) { 
-          //console.log('aborting search .. found matches through ' +
-          //  tokens.slice(0, t))
-          break; 
-        }
+        if(!node)  break;
       }
 
       // If we don't find a match, try a smaller n-gram size.
@@ -92,12 +81,12 @@
         result.push(suggestion)
       }
 
-      // Just pick the largest matching n-gram
-      // Comment out this line if you want to include smaller n-grams as well
+      // Just pick the largest matching n-gram.
+      // Comment out this line if you want to include smaller n-grams.
       if(result.length) break;
     }
 
+    // Arbitrarily limit the number of suggestions.
     return result.slice(0, 5)
   }
-
 }))
