@@ -9,7 +9,7 @@
   <body>
     <h1>Markov Chain Autocompleter</h1>
 
-    <form><textarea id="code" name="code">
+    <textarea id="code" name="code">
 function getCompletions(token, context) {
   var found = [], start = token.string;
   function maybeAdd(str) {
@@ -45,7 +45,7 @@ function getCompletions(token, context) {
   }
   return found;
 }
-</textarea></form>
+</textarea>
 
 <p>Press <strong>ctrl-space</strong> to activate autocompletion.</p>
 
@@ -53,9 +53,11 @@ function getCompletions(token, context) {
     <script src="lib/codemirror/addon/hint/show-hint.js"></script>
     <script src="lib/codemirror/addon/hint/javascript-hint.js"></script>
     <script src="lib/codemirror/mode/javascript/javascript.js"></script>
-    <script src="lib/microajax/microajax.minified.js"></script>
     <script src="lib/acorn/acorn.js"></script>
     <script src="lib/lodash/lodash.custom.js"></script>
-    <script src="web.js"></script>
+    <script src="db/grammar.js"></script>
+    <script src="db/value.js"></script>
+    <script src="src/tokenizer.js"></script>
+    <script src="src/web.js"></script>
   </body>
 </html>
