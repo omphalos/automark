@@ -695,3 +695,4 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 body { padding: 0 10% 0 10%; }
 .CodeMirror { border: 1px solid black; }
+textarea { width: 100%; height: 300px; }

@@ -33,11 +33,6 @@ CodeMirror.commands.autocomplete = function(cm) {
   CodeMirror.showHint(cm, provideAutocompletions)
 }
 
-var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-  lineNumbers: true,
-  extraKeys: {"Ctrl-Space": "autocomplete"}
-})
-
 document.getElementById('btn').onclick = function onclick() {
-  CodeMirror.showHint(editor, provideAutocompletions)
+  CodeMirror.showHint(window.editor, provideAutocompletions)
 }

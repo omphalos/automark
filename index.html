@@ -56,9 +56,15 @@ function getCompletions(token, context) {
       ga('send', 'pageview');
     </script>
     <script src="lib/codemirror/lib/codemirror.js"></script>
+    <script src="lib/codemirror/mode/javascript/javascript.js"></script>
+    <script>
+    window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      extraKeys: {"Ctrl-Space": "autocomplete"}
+    })
+    </script>
     <script src="lib/codemirror/addon/hint/show-hint.js"></script>
     <script src="lib/codemirror/addon/hint/javascript-hint.js"></script>
-    <script src="lib/codemirror/mode/javascript/javascript.js"></script>
     <script src="lib/acorn/acorn.js"></script>
     <script src="lib/lodash/lodash.custom.js"></script>
     <script src="src/tokenizer.js"></script>
