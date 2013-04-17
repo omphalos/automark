@@ -1,6 +1,14 @@
 function provideAutocompletions(editor) {
-  var cursor       = editor.getCursor()
-    , textToCursor = editor.getRange({line: 0, ch: 0}, cursor)
+
+  var db       = window.db
+    , dbLoaded = db && db.value && db.grammar
+    , cursor   = editor.getCursor()
+
+  if(!dbLoaded) {
+    return { list: [], from: cursor, to: cursor }
+  }
+
+  var textToCursor = editor.getRange({line: 0, ch: 0}, cursor)
     , lastChar     = textToCursor[textToCursor.length - 1]
     , endsInJsText = isJsText(lastChar)
     , suggestions  = automark.suggest(db, textToCursor).map(addSpaceIfNeeded)
@@ -29,3 +37,7 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
   lineNumbers: true,
   extraKeys: {"Ctrl-Space": "autocomplete"}
 })
+
+document.getElementById('btn').onclick = function onclick() {
+  CodeMirror.showHint(editor, provideAutocompletions)
+}
